@@ -25,7 +25,7 @@ class sparser(object):
     def parse_sc(self):
         attr = {}
         import re
-        with open('assets/scontrol.out', 'r') as scout:
+        with open('assets/sc_1401154', 'r') as scout:
 
             regex = re.compile(r'([^\ \=]+)\=(.*)')
             text = scout.readline()
