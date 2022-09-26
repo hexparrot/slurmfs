@@ -6,9 +6,24 @@ __email__ = "wdchromium@gmail.com"
 __status__ = "Development"
 
 class sparser(object):
-    def parse_sc(self):
+    def __init__(self):
         self.attr = {}
 
+    def clean_datatypes(self, attrs):
+        for k in attrs:
+            try:
+                attrs[k] = int(attrs[k])
+            except ValueError: #non int() castable
+                pass
+
+        for k in attrs:
+            if attrs[k] in ('N/A', 'None', '(null)', ''):
+                attrs[k] = None
+
+        return attrs
+
+    def parse_sc(self):
+        attr = {}
         import re
         with open('assets/scontrol.out', 'r') as scout:
 
@@ -18,27 +33,19 @@ class sparser(object):
             for line in text.split(" "):
                 hits = regex.match(line)
                 try:
-                    self.attr[hits[1]] = hits[2]
+                    attr[hits[1]] = hits[2]
                 except TypeError as e:
                     pass #nonetype hits[1] matches
 
-            uid_elems = self.attr['UserId'].split("(")
-            self.attr['UserId'] = uid_elems[0]
-            self.attr['Uid'] = uid_elems[1][0:-1]
+        uid_elems = attr['UserId'].split("(")
+        attr['UserId'] = uid_elems[0]
+        attr['Uid'] = uid_elems[1][0:-1]
 
-            uid_elems = self.attr['GroupId'].split("(")
-            self.attr['GroupId'] = uid_elems[0]
-            self.attr['Gid'] = uid_elems[1][0:-1]
+        uid_elems = attr['GroupId'].split("(")
+        attr['GroupId'] = uid_elems[0]
+        attr['Gid'] = uid_elems[1][0:-1]
 
-            for k in self.attr:
-                try:
-                    self.attr[k] = int(self.attr[k])
-                except ValueError: #non int() castable
-                    pass
-
-            for k in self.attr:
-                if self.attr[k] in ('N/A', 'None', '(null)', ''):
-                    self.attr[k] = None
+        return self.clean_datatypes(attr)
 
     def parse_sq(self):
         with open('assets/sq_1401154', 'r') as sqout:
@@ -53,15 +60,5 @@ class sparser(object):
             header.append(p1)
             items.append(p2)
 
-            self.attr = dict(zip(header,items))
-
-            for k in self.attr:
-                try:
-                    self.attr[k] = int(self.attr[k])
-                except ValueError: #non int() castable
-                    pass
-
-            for k in self.attr:
-                if self.attr[k] in ('N/A', 'None', '(null)', ''):
-                    self.attr[k] = None
+        return self.clean_datatypes(dict(zip(header,items)))
 

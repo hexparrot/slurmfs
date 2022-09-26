@@ -18,7 +18,7 @@ class TestSlurmParser(unittest.TestCase):
 
     def test_scontrol_splitting(self):
         sc = sparser()
-        sc.parse_sc()
+        output = sc.parse_sc()
 
         checks = {
             'JobId': 1337,
@@ -89,11 +89,11 @@ class TestSlurmParser(unittest.TestCase):
         }
 
         for k in checks:
-            self.assertEqual(sc.attr[k], checks[k])
+            self.assertEqual(output[k], checks[k])
 
     def test_squeue_parsing(self):
         sc = sparser()
-        sc.parse_sq()
+        output = sc.parse_sq()
 
         checks = {
             'ACCOUNT': 'grp_rcadmins',
@@ -147,7 +147,7 @@ class TestSlurmParser(unittest.TestCase):
         }
 
         for k in checks:
-            self.assertEqual(sc.attr[k], checks[k])
+            self.assertEqual(output[k], checks[k])
 
 if __name__ == '__main__':
     unittest.main()
