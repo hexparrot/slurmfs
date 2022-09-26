@@ -6,8 +6,12 @@ __email__ = "wdchromium@gmail.com"
 __status__ = "Development"
 
 class SlurmJob(object):
-    def __init__(self):
-        self.attr = {}
+    def __init__(self, data_dict):
+        self.attr = data_dict
+
+    def __str__(self):
+        a = self.attr
+        return f"""JobId={a['JobId']} JobName={a['JobName']} UserId={a['UserId']} Uid={a['Uid']} GroupId={a['GroupId']} Gid={a['Gid']} MCS_label={a['MCS_label']} Priority={a['Priority']} Nice={a['Nice']} Account={a['Account']} QOS={a['QOS']} JobState={a['JobState']} Reason={a['Reason']} Dependency={a['Dependency']} Requeue={a['Requeue']} Restarts={a['Restarts']} BatchFlag={a['BatchFlag']} Reboot={a['Reboot']} ExitCode={a['ExitCode']} RunTime={a['RunTime']} TimeLimit={a['TimeLimit']} TimeMin={a['TimeMin']} SubmitTime={a['SubmitTime']} EligibleTime={a['EligibleTime']} AccrueTime={a['AccrueTime']} StartTime={a['StartTime']} EndTime={a['EndTime']} Deadline={a['Deadline']} PreemptEligibleTime={a['PreemptEligibleTime']} PreemptTime={a['PreemptTime']} SuspendTime={a['SuspendTime']} SecsPreSuspend={a['SecsPreSuspend']} LastSchedEval={a['LastSchedEval']} Scheduler={a['Scheduler']} Partition={a['Partition']} AllocNode:Sid={a['AllocNode:Sid']} ReqNodeList={a['ReqNodeList']} ExcNodeList={a['ExcNodeList']} NodeList={a['NodeList']} BatchHost={a['BatchHost']} NumNodes={a['NumNodes']} NumCPUs={a['NumCPUs']} NumTasks={a['NumTasks']} CPUs/Task={a['CPUs/Task']} ReqB:S:C:T={a['ReqB:S:C:T']} TRES={a['TRES']} Socks/Node={a['Socks/Node']} NtasksPerN:B:S:C={a['NtasksPerN:B:S:C']} CoreSpec={a['CoreSpec']} MinCPUsNode={a['MinCPUsNode']} MinMemoryCPU={a['MinMemoryCPU']} MinTmpDiskNode={a['MinTmpDiskNode']} Features={a['Features']} DelayBoot={a['DelayBoot']} OverSubscribe={a['OverSubscribe']} Contiguous={a['Contiguous']} Licenses={a['Licenses']} Network={a['Network']} Command={a['Command']} WorkDir={a['WorkDir']} StdErr={a['StdErr']} StdIn={a['StdIn']} StdOut={a['StdOut']} Power={a['Power']}"""
 
     @classmethod
     def parse_sc(cls, fn):
