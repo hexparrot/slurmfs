@@ -18,6 +18,7 @@ class TestSlurmParser(unittest.TestCase):
 
     def test_scontrol_splitting(self):
         sc = sparser()
+        sc.parse_sc()
 
         checks = {
             'JobId': 1337,
@@ -146,7 +147,6 @@ class TestSlurmParser(unittest.TestCase):
         }
 
         for k in checks:
-            print(k)
             self.assertEqual(sc.attr[k], checks[k])
 
 if __name__ == '__main__':

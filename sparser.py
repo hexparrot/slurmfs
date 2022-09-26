@@ -6,7 +6,7 @@ __email__ = "wdchromium@gmail.com"
 __status__ = "Development"
 
 class sparser(object):
-    def __init__(self):
+    def parse_sc(self):
         self.attr = {}
 
         import re
@@ -65,4 +65,3 @@ class sparser(object):
                 if self.attr[k] in ('N/A', 'None', '(null)', ''):
                     self.attr[k] = None
 
-            print(self.attr)
