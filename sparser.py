@@ -40,3 +40,29 @@ class sparser(object):
                 if self.attr[k] in ('N/A', 'None', '(null)', ''):
                     self.attr[k] = None
 
+    def parse_sq(self):
+        with open('assets/sq_1401154', 'r') as sqout:
+            header = sqout.readline().split("|")
+            items = sqout.readline().split("|")
+
+            #pop off last item, seen as ('WORK_DIR\n', '/home/wdizon\n')
+            p1 = header.pop().rstrip()
+            p2 = items.pop().rstrip()
+
+            #readd after newline removal
+            header.append(p1)
+            items.append(p2)
+
+            self.attr = dict(zip(header,items))
+
+            for k in self.attr:
+                try:
+                    self.attr[k] = int(self.attr[k])
+                except ValueError: #non int() castable
+                    pass
+
+            for k in self.attr:
+                if self.attr[k] in ('N/A', 'None', '(null)', ''):
+                    self.attr[k] = None
+
+            print(self.attr)
