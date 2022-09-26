@@ -7,7 +7,7 @@ __email__ = "wdchromium@gmail.com"
 __status__ = "Development"
 
 import unittest
-from scparser import scparser
+from sparser import sparser
 
 class TestSlurmParser(unittest.TestCase):
     def setup(self):
@@ -17,7 +17,7 @@ class TestSlurmParser(unittest.TestCase):
         pass
 
     def test_scontrol_splitting(self):
-        sc = scparser()
+        sc = sparser()
 
         checks = {
             'JobId': 1337,

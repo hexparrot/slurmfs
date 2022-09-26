@@ -5,7 +5,7 @@ __maintainer__ = "William Dizon"
 __email__ = "wdchromium@gmail.com"
 __status__ = "Development"
 
-class scparser(object):
+class sparser(object):
     def __init__(self):
         self.attr = {}
 
