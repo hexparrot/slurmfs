@@ -5,29 +5,18 @@ __maintainer__ = "William Dizon"
 __email__ = "wdchromium@gmail.com"
 __status__ = "Development"
 
-class sparser(object):
+class SlurmJob(object):
     def __init__(self):
         self.attr = {}
 
-    def clean_datatypes(self, attrs):
-        for k in attrs:
-            try:
-                attrs[k] = int(attrs[k])
-            except ValueError: #non int() castable
-                pass
-
-        for k in attrs:
-            if attrs[k] in ('N/A', 'None', '(null)', ''):
-                attrs[k] = None
-
-        return attrs
-
-    def parse_sc(self):
-        attr = {}
+    @classmethod
+    def parse_sc(cls, fn):
         import re
-        with open('assets/sc_1401154', 'r') as scout:
 
-            regex = re.compile(r'([^\ \=]+)\=(.*)')
+        attr = {}
+        regex = re.compile(r'([^\ \=]+)\=(.*)')
+
+        with open(fn, 'r') as scout:
             text = scout.readline()
 
             for line in text.split(" "):
@@ -45,10 +34,11 @@ class sparser(object):
         attr['GroupId'] = uid_elems[0]
         attr['Gid'] = uid_elems[1][0:-1]
 
-        return self.clean_datatypes(attr)
+        return cls.clean_datatypes(attr)
 
-    def parse_sq(self):
-        with open('assets/sq_1401154', 'r') as sqout:
+    @classmethod
+    def parse_sq(cls, fn):
+        with open(fn, 'r') as sqout:
             header = sqout.readline().split("|")
             items = sqout.readline().split("|")
 
@@ -60,5 +50,19 @@ class sparser(object):
             header.append(p1)
             items.append(p2)
 
-        return self.clean_datatypes(dict(zip(header,items)))
+        return cls.clean_datatypes(dict(zip(header,items)))
+
+    @staticmethod
+    def clean_datatypes(attrs):
+        for k in attrs:
+            try:
+                attrs[k] = int(attrs[k])
+            except ValueError: #non int() castable
+                pass
+
+        for k in attrs:
+            if attrs[k] in ('N/A', 'None', '(null)', ''):
+                attrs[k] = None
+
+        return attrs
 

@@ -7,7 +7,7 @@ __email__ = "wdchromium@gmail.com"
 __status__ = "Development"
 
 import unittest
-from sparser import sparser
+from sparser import SlurmJob
 
 class TestSlurmParser(unittest.TestCase):
     def setup(self):
@@ -17,9 +17,6 @@ class TestSlurmParser(unittest.TestCase):
         pass
 
     def test_scontrol_splitting(self):
-        sc = sparser()
-        output = sc.parse_sc()
-
         checks = {
             'JobId': 1401154,
             'JobName': '_interactive',
@@ -87,13 +84,12 @@ class TestSlurmParser(unittest.TestCase):
             'Power': None,
         }
 
+        output = SlurmJob.parse_sc('assets/sc_1401154')
+
         for k in checks:
             self.assertEqual(output[k], checks[k])
 
     def test_squeue_parsing(self):
-        sc = sparser()
-        output = sc.parse_sq()
-
         checks = {
             'ACCOUNT': 'wheel',
             'TRES_PER_NODE': None,
@@ -144,6 +140,8 @@ class TestSlurmParser(unittest.TestCase):
             'SCHEDNODES': None,
             'WORK_DIR': '/home/wdizon',
         }
+
+        output = SlurmJob.parse_sq('assets/sq_1401154')
 
         for k in checks:
             self.assertEqual(output[k], checks[k])
