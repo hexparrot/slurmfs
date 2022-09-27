@@ -36,7 +36,7 @@ class SlurmJob(object):
         f"""StdIn={a['StdIn']} StdOut={a['StdOut']} Power={a['Power']}"""
 
     @classmethod
-    def parse_sc(cls, fn):
+    def parse_sc_job(cls, fn):
         attr = {}
         regex = re.compile(r'([^\ \=]+)\=(.*)')
 
