@@ -85,7 +85,8 @@ class TestSlurmParser(unittest.TestCase):
             'Power': None,
         }
 
-        output = SlurmJob.parse_sc_job('assets/sc_1401154')
+        with open('assets/sc_1401154') as fn:
+            output = SlurmJob.parse_sc_job(fn.read())
 
         for k in checks:
             self.assertEqual(output[k], checks[k])
@@ -148,7 +149,9 @@ class TestSlurmParser(unittest.TestCase):
             self.assertEqual(output[k], checks[k])
 
     def test_jobject(self):
-        output = SlurmJob.parse_sc_job('assets/sc_1401154')
+        with open('assets/sc_1401154') as fn:
+            output = SlurmJob.parse_sc_job(fn.read())
+
         sj = SlurmJob(output)
         self.assertEqual(str(sj), """JobId=1401154 JobName=_interactive UserId=wdizon Uid=4286 GroupId=wheel Gid=99999999 MCS_label=None Priority=999 Nice=0 Account=wheel QOS=public JobState=RUNNING Reason=None Dependency=None Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:10:41 TimeLimit=04:00:00 TimeMin=None SubmitTime=2022-09-26T07:11:01 EligibleTime=2022-09-26T07:11:01 AccrueTime=2022-09-26T07:11:01 StartTime=2022-09-26T07:11:01 EndTime=2022-09-26T11:11:01 Deadline=None PreemptEligibleTime=2022-09-26T07:26:01 PreemptTime=None SuspendTime=None SecsPreSuspend=0 LastSchedEval=2022-09-26T07:11:01 Scheduler=Main Partition=general AllocNode:Sid=slurm01:1586016 ReqNodeList=None ExcNodeList=None NodeList=c066 BatchHost=c066 NumNodes=1 NumCPUs=1 NumTasks=1 CPUs/Task=1 ReqB:S:C:T=0:0:*:* TRES=cpu=1,mem=2G,node=1,billing=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=1 MinMemoryCPU=2G MinTmpDiskNode=0 Features=public DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=None Network=None Command=/usr/local/bin/_interactive WorkDir=/home/wdizon StdErr=/dev/null StdIn=/dev/null StdOut=/dev/null Power=None""")
 
@@ -195,7 +198,8 @@ class TestSlurmParser(unittest.TestCase):
             'ExtSensorsTemp': None,
         }
 
-        output = SlurmJob.parse_sc_node('assets/sc_nodec001')
+        with open('assets/sc_nodec001') as fn:
+            output = SlurmJob.parse_sc_node(fn.read())
 
         for k in checks:
             self.assertEqual(output[k], checks[k])
@@ -238,7 +242,8 @@ class TestSlurmParser(unittest.TestCase):
             'TRESBillingWeights': 'CPU=1.0,Mem=0.25G,gres/gpu=20.0,gres/gpu:k80=22.0',
         }
 
-        output = SlurmJob.parse_sc_partition('assets/sc_partgen')
+        with open('assets/sc_partgen') as fn:
+            output = SlurmJob.parse_sc_partition(fn.read())
 
         for k in checks:
             self.assertEqual(output[k], checks[k])

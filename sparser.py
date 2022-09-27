@@ -38,30 +38,27 @@ class SlurmJob(object):
     @classmethod
     def scontrol_parse(cls, fn):
         with open(fn, 'r') as scout:
-            text = scout.readline()
+            text = scout.read()
             if text.startswith("JobId"):
-                return cls.parse_sc_job(fn)
+                return cls.parse_sc_job(text)
             elif text.startswith("PartitionName"):
-                return cls.parse_sc_partition(fn)
+                return cls.parse_sc_partition(text)
             elif text.startswith("NodeName"):
-                return cls.parse_sc_node(fn)
+                return cls.parse_sc_node(text)
             else:
                 raise NotImplementedError
 
     @classmethod
-    def parse_sc_job(cls, fn):
+    def parse_sc_job(cls, text):
         attr = {}
         regex = re.compile(r'([^\ \=]+)\=(.*)')
 
-        with open(fn, 'r') as scout:
-            text = scout.readline()
-
-            for line in text.split(" "):
-                hits = regex.match(line)
-                try:
-                    attr[hits[1]] = hits[2]
-                except TypeError as e:
-                    pass #nonetype hits[1] matches
+        for line in text.split(" "):
+            hits = regex.match(line)
+            try:
+                attr[hits[1]] = hits[2]
+            except TypeError as e:
+                pass #nonetype hits[1] matches
 
         uid_elems = attr['UserId'].split("(")
         attr['UserId'] = uid_elems[0]
@@ -74,37 +71,32 @@ class SlurmJob(object):
         return cls.clean_datatypes(attr)
 
     @classmethod
-    def parse_sc_partition(cls, fn):
+    def parse_sc_partition(cls, text):
         attr = {}
         regex = re.compile(r'([^\ \=]+)\=(.*)')
 
-        with open(fn, 'r') as scout:
-            text = scout.readline()
-
-            for line in text.split(" "):
-                hits = regex.match(line)
-                try:
-                    attr[hits[1]] = hits[2]
-                except TypeError as e:
-                    pass #nonetype hits[1] matches
+        for line in text.split(" "):
+            hits = regex.match(line)
+            try:
+                attr[hits[1]] = hits[2]
+            except TypeError as e:
+                pass #nonetype hits[1] matches
 
         return cls.clean_datatypes(attr)
 
     @classmethod
-    def parse_sc_node(cls, fn):
+    def parse_sc_node(cls, text):
         attr = {}
         regex = re.compile(r'([a-zA-Z_]+)=([^ \ ]*)')
         os_regex = re.compile(r'OS=(.+?) +[A-Za-z]+=')
 
-        with open(fn, 'r') as scout:
-            text = scout.readline()
-            matches = re.findall(regex,text.rstrip('\n'))
+        matches = re.findall(regex,text.rstrip('\n'))
 
-            for k,v in matches:
-                attr[k] = v
+        for k,v in matches:
+            attr[k] = v
 
-            match = re.findall(os_regex, text)[0]
-            attr["OS"] = match
+        match = re.findall(os_regex, text)[0]
+        attr["OS"] = match
 
         return cls.clean_datatypes(attr)
 
