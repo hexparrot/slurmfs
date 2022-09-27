@@ -36,6 +36,19 @@ class SlurmJob(object):
         f"""StdIn={a['StdIn']} StdOut={a['StdOut']} Power={a['Power']}"""
 
     @classmethod
+    def scontrol_parse(cls, fn):
+        with open(fn, 'r') as scout:
+            text = scout.readline()
+            if text.startswith("JobId"):
+                return cls.parse_sc_job(fn)
+            elif text.startswith("PartitionName"):
+                return cls.parse_sc_partition(fn)
+            elif text.startswith("NodeName"):
+                return cls.parse_sc_node(fn)
+            else:
+                raise NotImplementedError
+
+    @classmethod
     def parse_sc_job(cls, fn):
         attr = {}
         regex = re.compile(r'([^\ \=]+)\=(.*)')

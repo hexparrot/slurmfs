@@ -243,5 +243,24 @@ class TestSlurmParser(unittest.TestCase):
         for k in checks:
             self.assertEqual(output[k], checks[k])
 
+    def test_scontrol_dispatcher(self):
+        checks = {
+            'partition': "PartitionName",
+            'job': "JobName",
+            'node': "NodeName"
+        }
+
+        output = SlurmJob.scontrol_parse('assets/sc_partgen')
+        self.assertTrue("PartitionName" in output)
+
+        output = SlurmJob.scontrol_parse('assets/sc_nodec001')
+        self.assertTrue("NodeName" in output)
+
+        output = SlurmJob.scontrol_parse('assets/sc_1401154')
+        self.assertTrue("JobId" in output)
+
+        with self.assertRaises(NotImplementedError) as ex:
+            SlurmJob.scontrol_parse('assets/sq_1401154')
+
 if __name__ == '__main__':
     unittest.main()
