@@ -200,5 +200,48 @@ class TestSlurmParser(unittest.TestCase):
         for k in checks:
             self.assertEqual(output[k], checks[k])
 
+    def test_scontrol_partition_parsing(self):
+        checks = {
+            'PartitionName': 'general',
+            'AllowGroups': 'ALL',
+            'AllowAccounts': 'ALL',
+            'AllowQos': 'public,debug,long',
+            'AllocNodes': 'ALL',
+            'Default': False,
+            'QoS': 'public',
+            'DefaultTime': '04:00:00',
+            'DisableRootJobs': False,
+            'ExclusiveUser': False,
+            'GraceTime': 0,
+            'Hidden': False,
+            'MaxNodes': 'UNLIMITED',
+            'MaxTime': '7-00:00:00',
+            'MinNodes': 0,
+            'LLN': False,
+            'MaxCPUsPerNode': 'UNLIMITED',
+            'Nodes': 'c[002-097,100-112],fpga01a,fpga01i',
+            'PriorityJobFactor': 1,
+            'PriorityTier': 1,
+            'RootOnly': False,
+            'ReqResv': False,
+            'OverSubscribe': False,
+            'OverTimeLimit': None,
+            'PreemptMode': 'CANCEL',
+            'State': 'UP',
+            'TotalCPUs': 14052,
+            'TotalNodes': 111,
+            'SelectTypeParameters': None,
+            'JobDefaults': 'DefMemPerGPU=4096',
+            'DefMemPerCPU': 2048,
+            'MaxMemPerNode': 'UNLIMITED',
+            'TRES': 'cpu=14052,mem=56811900M,node=111,billing=27922',
+            'TRESBillingWeights': 'CPU=1.0,Mem=0.25G,gres/gpu=20.0,gres/gpu:k80=22.0',
+        }
+
+        output = SlurmJob.parse_sc_partition('assets/sc_partgen')
+
+        for k in checks:
+            self.assertEqual(output[k], checks[k])
+
 if __name__ == '__main__':
     unittest.main()

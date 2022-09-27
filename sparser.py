@@ -61,6 +61,23 @@ class SlurmJob(object):
         return cls.clean_datatypes(attr)
 
     @classmethod
+    def parse_sc_partition(cls, fn):
+        attr = {}
+        regex = re.compile(r'([^\ \=]+)\=(.*)')
+
+        with open(fn, 'r') as scout:
+            text = scout.readline()
+
+            for line in text.split(" "):
+                hits = regex.match(line)
+                try:
+                    attr[hits[1]] = hits[2]
+                except TypeError as e:
+                    pass #nonetype hits[1] matches
+
+        return cls.clean_datatypes(attr)
+
+    @classmethod
     def parse_sc_node(cls, fn):
         attr = {}
         regex = re.compile(r'([a-zA-Z_]+)=([^ \ ]*)')
@@ -103,8 +120,10 @@ class SlurmJob(object):
                 try:
                     attrs[k] = float(attrs[k])
                 except ValueError: #string not float castable, treat as string and reduce
-                    if attrs[k] in ('N/A', 'n/a', 'n/s', 'None', '(null)', ''):
+                    if attrs[k] in ('N/A', 'n/a', 'n/s', 'None', 'NONE', '(null)', ''):
                         attrs[k] = None
+                    elif attrs[k] in ('NO'):
+                        attrs[k] = False
 
         return attrs
 
