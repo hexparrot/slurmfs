@@ -5,6 +5,8 @@ __maintainer__ = "William Dizon"
 __email__ = "wdchromium@gmail.com"
 __status__ = "Development"
 
+import re
+
 class SlurmJob(object):
     def __init__(self, data_dict):
         self.attr = data_dict
@@ -35,8 +37,6 @@ class SlurmJob(object):
 
     @classmethod
     def parse_sc(cls, fn):
-        import re
-
         attr = {}
         regex = re.compile(r'([^\ \=]+)\=(.*)')
 
@@ -57,6 +57,24 @@ class SlurmJob(object):
         uid_elems = attr['GroupId'].split("(")
         attr['GroupId'] = uid_elems[0]
         attr['Gid'] = uid_elems[1][0:-1]
+
+        return cls.clean_datatypes(attr)
+
+    @classmethod
+    def parse_sc_node(cls, fn):
+        attr = {}
+        regex = re.compile(r'([a-zA-Z_]+)=([^ \ ]*)')
+        os_regex = re.compile(r'OS=(.+?) +[A-Za-z]+=')
+
+        with open(fn, 'r') as scout:
+            text = scout.readline()
+            matches = re.findall(regex,text.rstrip('\n'))
+
+            for k,v in matches:
+                attr[k] = v
+
+            match = re.findall(os_regex, text)[0]
+            attr["OS"] = match
 
         return cls.clean_datatypes(attr)
 
@@ -82,11 +100,11 @@ class SlurmJob(object):
             try:
                 attrs[k] = int(attrs[k])
             except ValueError: #non int() castable
-                pass
-
-        for k in attrs:
-            if attrs[k] in ('N/A', 'None', '(null)', ''):
-                attrs[k] = None
+                try:
+                    attrs[k] = float(attrs[k])
+                except ValueError: #string not float castable, treat as string and reduce
+                    if attrs[k] in ('N/A', 'n/a', 'n/s', 'None', '(null)', ''):
+                        attrs[k] = None
 
         return attrs
 
