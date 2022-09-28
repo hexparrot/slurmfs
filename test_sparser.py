@@ -11,6 +11,7 @@ import time
 from sparser import SlurmJob
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+DURATION_FORMAT = "%H:%M:%S"
 
 class TestSlurmParser(unittest.TestCase):
     maxDiff = None
@@ -41,8 +42,8 @@ class TestSlurmParser(unittest.TestCase):
             'BatchFlag': 1,
             'Reboot': 0,
             'ExitCode': "0:0",
-            'RunTime': "00:10:41",
-            'TimeLimit': '04:00:00',
+            'RunTime': time.strptime("00:10:41", DURATION_FORMAT),
+            'TimeLimit': time.strptime('04:00:00', DURATION_FORMAT),
             'TimeMin': None,
             'SubmitTime': time.strptime('2022-09-26T07:11:01', TIME_FORMAT),
             'EligibleTime': time.strptime('2022-09-26T07:11:01', TIME_FORMAT),
@@ -75,7 +76,7 @@ class TestSlurmParser(unittest.TestCase):
             'MinMemoryCPU': '2G',
             'MinTmpDiskNode': 0,
             'Features': 'public',
-            'DelayBoot': '00:00:00',
+            'DelayBoot': time.strptime('00:00:00', DURATION_FORMAT),
             'OverSubscribe': 'OK',
             'Contiguous': 0,
             'Licenses': None,
@@ -107,7 +108,7 @@ class TestSlurmParser(unittest.TestCase):
             'JOBID': 1401154,
             'NAME': '_interactive',
             'COMMENT': None,
-            'TIME_LIMIT': '4:00:00',
+            'TIME_LIMIT': time.strptime('4:00:00', DURATION_FORMAT),
             'MIN_MEMORY': '2G',
             'REQ_NODES': None,
             'COMMAND': '/usr/local/bin/_interactive',
@@ -130,7 +131,7 @@ class TestSlurmParser(unittest.TestCase):
             'CORES_PER_SOCKET': '*',
             'THREADS_PER_CORE': '*',
             'ARRAY_TASK_ID': None,
-            'TIME_LEFT': '3:49:19',
+            'TIME_LEFT': time.strptime('3:49:19', DURATION_FORMAT),
             'TIME': '10:41',
             'NODELIST': 'c066',
             'CONTIGUOUS': 0,
@@ -217,7 +218,7 @@ class TestSlurmParser(unittest.TestCase):
             'AllocNodes': 'ALL',
             'Default': False,
             'QoS': 'public',
-            'DefaultTime': '04:00:00',
+            'DefaultTime': time.strptime('04:00:00', DURATION_FORMAT),
             'DisableRootJobs': False,
             'ExclusiveUser': False,
             'GraceTime': 0,

@@ -15,12 +15,14 @@ class SlurmJob(object):
     def __str__(self):
         a = self.attr
         t = "%Y-%m-%dT%H:%M:%S"
+        d = "%H:%M:%S"
         return f"""JobId={a['JobId']} JobName={a['JobName']} UserId={a['UserId']} Uid={a['Uid']} """ \
         f"""GroupId={a['GroupId']} Gid={a['Gid']} MCS_label={a['MCS_label']} Priority={a['Priority']} """ \
         f"""Nice={a['Nice']} Account={a['Account']} QOS={a['QOS']} JobState={a['JobState']} """ \
         f"""Reason={a['Reason']} Dependency={a['Dependency']} Requeue={a['Requeue']} """ \
         f"""Restarts={a['Restarts']} BatchFlag={a['BatchFlag']} Reboot={a['Reboot']} """ \
-        f"""ExitCode={a['ExitCode']} RunTime={a['RunTime']} TimeLimit={a['TimeLimit']} TimeMin={a['TimeMin']} """ \
+        f"""ExitCode={a['ExitCode']} RunTime={time.strftime(d,a['RunTime'])} """ \
+        f"""TimeLimit={time.strftime(d,a['TimeLimit'])} TimeMin={a['TimeMin']} """ \
         f"""SubmitTime={time.strftime(t,a['SubmitTime'])} EligibleTime={time.strftime(t,a['EligibleTime'])} """ \
         f"""AccrueTime={time.strftime(t,a['AccrueTime'])} StartTime={time.strftime(t,a['StartTime'])} """ \
         f"""EndTime={time.strftime(t,a['EndTime'])} Deadline={a['Deadline']} """ \
@@ -33,7 +35,7 @@ class SlurmJob(object):
         f"""NumTasks={a['NumTasks']} CPUs/Task={a['CPUs/Task']} ReqB:S:C:T={a['ReqB:S:C:T']} """ \
         f"""TRES={a['TRES']} Socks/Node={a['Socks/Node']} NtasksPerN:B:S:C={a['NtasksPerN:B:S:C']} """ \
         f"""CoreSpec={a['CoreSpec']} MinCPUsNode={a['MinCPUsNode']} MinMemoryCPU={a['MinMemoryCPU']} """ \
-        f"""MinTmpDiskNode={a['MinTmpDiskNode']} Features={a['Features']} DelayBoot={a['DelayBoot']} """ \
+        f"""MinTmpDiskNode={a['MinTmpDiskNode']} Features={a['Features']} DelayBoot={time.strftime(d,a['DelayBoot'])} """ \
         f"""OverSubscribe={a['OverSubscribe']} Contiguous={a['Contiguous']} Licenses={a['Licenses']} """ \
         f"""Network={a['Network']} Command={a['Command']} WorkDir={a['WorkDir']} StdErr={a['StdErr']} """ \
         f"""StdIn={a['StdIn']} StdOut={a['StdOut']} Power={a['Power']}"""
@@ -123,6 +125,8 @@ class SlurmJob(object):
 
     @staticmethod
     def clean_datatypes(attrs):
+        TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+        DURATION_FORMAT = "%H:%M:%S"
         for k in attrs:
             try:
                 attrs[k] = int(attrs[k])
@@ -134,11 +138,17 @@ class SlurmJob(object):
                         attrs[k] = None
                     elif attrs[k] in ('NO'):
                         attrs[k] = False
-                    elif ":" in attrs[k]:
-                        try:
-                            attrs[k] = time.strptime(attrs[k], "%Y-%m-%dT%H:%M:%S")
-                        except ValueError: #if not a timestring
-                            pass
+                    elif ':' in attrs[k]:
+                        if '-' in attrs[k]:
+                            try:
+                                attrs[k] = time.strptime(attrs[k], TIME_FORMAT)
+                            except ValueError: #if not a timestring
+                                pass
+                        else:
+                            try:
+                                attrs[k] = time.strptime(attrs[k], DURATION_FORMAT)
+                            except ValueError: #if not a timestring
+                                pass
 
         return attrs
 
