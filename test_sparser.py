@@ -143,7 +143,8 @@ class TestSlurmParser(unittest.TestCase):
             'WORK_DIR': '/home/wdizon',
         }
 
-        output = SlurmJob.parse_sq('assets/sq_1401154')
+        with open('assets/sq_1401154') as fn:
+            output = SlurmJob.parse_sq(fn.read())
 
         for k in checks:
             self.assertEqual(output[k], checks[k])
@@ -264,8 +265,8 @@ class TestSlurmParser(unittest.TestCase):
         output = SlurmJob.scontrol_parse('assets/sc_1401154')
         self.assertTrue("JobId" in output)
 
-        with self.assertRaises(NotImplementedError) as ex:
-            SlurmJob.scontrol_parse('assets/sq_1401154')
+        output = SlurmJob.scontrol_parse('assets/sq_1401154')
+        self.assertTrue("ACCOUNT" in output)
 
 if __name__ == '__main__':
     unittest.main()

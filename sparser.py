@@ -45,6 +45,8 @@ class SlurmJob(object):
                 return cls.parse_sc_partition(text)
             elif text.startswith("NodeName"):
                 return cls.parse_sc_node(text)
+            elif text.startswith("ACCOUNT"):
+                return cls.parse_sq(text)
             else:
                 raise NotImplementedError
 
@@ -101,18 +103,18 @@ class SlurmJob(object):
         return cls.clean_datatypes(attr)
 
     @classmethod
-    def parse_sq(cls, fn):
-        with open(fn, 'r') as sqout:
-            header = sqout.readline().split("|")
-            items = sqout.readline().split("|")
+    def parse_sq(cls, text):
+        header_line, item_line = text.split()
+        header = header_line.split("|")
+        items = item_line.split("|")
 
-            #pop off last item, seen as ('WORK_DIR\n', '/home/wdizon\n')
-            p1 = header.pop().rstrip()
-            p2 = items.pop().rstrip()
+        #pop off last item, seen as ('WORK_DIR\n', '/home/wdizon\n')
+        p1 = header.pop().rstrip()
+        p2 = items.pop().rstrip()
 
-            #readd after newline removal
-            header.append(p1)
-            items.append(p2)
+        #readd after newline removal
+        header.append(p1)
+        items.append(p2)
 
         return cls.clean_datatypes(dict(zip(header,items)))
 
