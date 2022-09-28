@@ -29,13 +29,13 @@ class SlurmJob(object):
         f"""PreemptEligibleTime={time.strftime(t,a['PreemptEligibleTime'])} PreemptTime={a['PreemptTime']} """ \
         f"""SuspendTime={a['SuspendTime']} SecsPreSuspend={a['SecsPreSuspend']} """ \
         f"""LastSchedEval={time.strftime(t,a['LastSchedEval'])} Scheduler={a['Scheduler']} """ \
-        f"""Partition={a['Partition']} AllocNode:Sid={a['AllocNode:Sid']} """ \
+        f"""Partition={','.join(a['Partition'])} AllocNode:Sid={a['AllocNode:Sid']} """ \
         f"""ReqNodeList={a['ReqNodeList']} ExcNodeList={a['ExcNodeList']} NodeList={a['NodeList']} """ \
         f"""BatchHost={a['BatchHost']} NumNodes={a['NumNodes']} NumCPUs={a['NumCPUs']} """ \
         f"""NumTasks={a['NumTasks']} CPUs/Task={a['CPUs/Task']} ReqB:S:C:T={a['ReqB:S:C:T']} """ \
         f"""TRES={a['TRES']} Socks/Node={a['Socks/Node']} NtasksPerN:B:S:C={a['NtasksPerN:B:S:C']} """ \
         f"""CoreSpec={a['CoreSpec']} MinCPUsNode={a['MinCPUsNode']} MinMemoryCPU={a['MinMemoryCPU']} """ \
-        f"""MinTmpDiskNode={a['MinTmpDiskNode']} Features={a['Features']} DelayBoot={time.strftime(d,a['DelayBoot'])} """ \
+        f"""MinTmpDiskNode={a['MinTmpDiskNode']} Features={','.join(a['Features'])} DelayBoot={time.strftime(d,a['DelayBoot'])} """ \
         f"""OverSubscribe={a['OverSubscribe']} Contiguous={a['Contiguous']} Licenses={a['Licenses']} """ \
         f"""Network={a['Network']} Command={a['Command']} WorkDir={a['WorkDir']} StdErr={a['StdErr']} """ \
         f"""StdIn={a['StdIn']} StdOut={a['StdOut']} Power={a['Power']}"""
@@ -134,21 +134,36 @@ class SlurmJob(object):
                 try:
                     attrs[k] = float(attrs[k])
                 except ValueError: #string not float castable, treat as string and reduce
+                    # if string is a known-null value
                     if attrs[k] in ('N/A', 'n/a', 'n/s', 'None', 'NONE', '(null)', ''):
                         attrs[k] = None
+                    # if string is a known false value
                     elif attrs[k] in ('NO'):
                         attrs[k] = False
+                    # check if colon is present (for time-based values)
                     elif ':' in attrs[k]:
+                        # - indicates longform date and time
                         if '-' in attrs[k]:
                             try:
                                 attrs[k] = time.strptime(attrs[k], TIME_FORMAT)
-                            except ValueError: #if not a timestring
+                            except ValueError: #if not a timestring, noop
                                 pass
+                        # use short form duration instead
                         else:
                             try:
                                 attrs[k] = time.strptime(attrs[k], DURATION_FORMAT)
-                            except ValueError: #if not a timestring
+                            except ValueError: #if not a timestring, noop
                                 pass
+                    # if none of the above are hits, convert known fields with allowable multiple values
+                    else:
+                        for match in ("PARTITION", "Partition", "Partitions", "PartitionName",
+                                      "AvailableFeatures", "Features", "ActiveFeatures", "AllowQos"):
+                            if k == match:
+                                if ',' in attrs[k]:
+                                    attrs[k] = attrs[k].split(',')
+                                # if no comma present, it's just one word, therefore wrap a list around item
+                                else:
+                                    attrs[k] = [attrs[k]]
 
         return attrs
 
