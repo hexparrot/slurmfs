@@ -7,7 +7,10 @@ __email__ = "wdchromium@gmail.com"
 __status__ = "Development"
 
 import unittest
+import time
 from sparser import SlurmJob
+
+TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 class TestSlurmParser(unittest.TestCase):
     maxDiff = None
@@ -41,17 +44,17 @@ class TestSlurmParser(unittest.TestCase):
             'RunTime': "00:10:41",
             'TimeLimit': '04:00:00',
             'TimeMin': None,
-            'SubmitTime': '2022-09-26T07:11:01',
-            'EligibleTime': '2022-09-26T07:11:01',
-            'AccrueTime': '2022-09-26T07:11:01',
-            'StartTime': '2022-09-26T07:11:01',
-            'EndTime': '2022-09-26T11:11:01',
+            'SubmitTime': time.strptime('2022-09-26T07:11:01', TIME_FORMAT),
+            'EligibleTime': time.strptime('2022-09-26T07:11:01', TIME_FORMAT),
+            'AccrueTime': time.strptime('2022-09-26T07:11:01', TIME_FORMAT),
+            'StartTime': time.strptime('2022-09-26T07:11:01', TIME_FORMAT),
+            'EndTime': time.strptime('2022-09-26T11:11:01', TIME_FORMAT),
             'Deadline': None,
-            'PreemptEligibleTime': '2022-09-26T07:26:01',
+            'PreemptEligibleTime': time.strptime('2022-09-26T07:26:01', TIME_FORMAT),
             'PreemptTime': None,
             'SuspendTime': None,
             'SecsPreSuspend': 0,
-            'LastSchedEval': '2022-09-26T07:11:01',
+            'LastSchedEval': time.strptime('2022-09-26T07:11:01', TIME_FORMAT),
             'Scheduler': 'Main',
             'Partition': 'general',
             'AllocNode:Sid': 'slurm01:1586016',
@@ -97,7 +100,7 @@ class TestSlurmParser(unittest.TestCase):
             'TRES_PER_NODE': None,
             'MIN_CPUS': 1,
             'MIN_TMP_DISK': 0,
-            'END_TIME': '2022-09-26T11:11:01',
+            'END_TIME': time.strptime('2022-09-26T11:11:01', TIME_FORMAT),
             'FEATURES': 'public',
             'GROUP': 99999999,
             'OVER_SUBSCRIBE': 'OK',
@@ -133,10 +136,10 @@ class TestSlurmParser(unittest.TestCase):
             'CONTIGUOUS': 0,
             'PARTITION': 'general',
             'NODELIST(REASON)': 'c066',
-            'START_TIME': '2022-09-26T07:11:01',
+            'START_TIME': time.strptime('2022-09-26T07:11:01', TIME_FORMAT),
             'STATE': 'RUNNING',
             'UID': 4286,
-            'SUBMIT_TIME': '2022-09-26T07:11:01',
+            'SUBMIT_TIME': time.strptime('2022-09-26T07:11:01', TIME_FORMAT),
             'LICENSES': None,
             'CORE_SPEC': None,
             'SCHEDNODES': None,
@@ -186,9 +189,9 @@ class TestSlurmParser(unittest.TestCase):
             'Owner': None,
             'MCS_label': None,
             'Partitions': 'noncompute',
-            'BootTime': '2022-07-06T12:26:50',
-            'SlurmdStartTime': '2022-09-16T14:01:20',
-            'LastBusyTime': '2022-09-25T03:27:46',
+            'BootTime': time.strptime('2022-07-06T12:26:50', TIME_FORMAT),
+            'SlurmdStartTime': time.strptime('2022-09-16T14:01:20', TIME_FORMAT),
+            'LastBusyTime': time.strptime('2022-09-25T03:27:46', TIME_FORMAT),
             'CfgTRES': 'cpu=128,mem=515317M,billing=63',
             'AllocTRES': None,
             'CapWatts': None,

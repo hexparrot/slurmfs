@@ -6,6 +6,7 @@ __email__ = "wdchromium@gmail.com"
 __status__ = "Development"
 
 import re
+import time
 
 class SlurmJob(object):
     def __init__(self, data_dict):
@@ -13,18 +14,20 @@ class SlurmJob(object):
 
     def __str__(self):
         a = self.attr
+        t = "%Y-%m-%dT%H:%M:%S"
         return f"""JobId={a['JobId']} JobName={a['JobName']} UserId={a['UserId']} Uid={a['Uid']} """ \
         f"""GroupId={a['GroupId']} Gid={a['Gid']} MCS_label={a['MCS_label']} Priority={a['Priority']} """ \
         f"""Nice={a['Nice']} Account={a['Account']} QOS={a['QOS']} JobState={a['JobState']} """ \
         f"""Reason={a['Reason']} Dependency={a['Dependency']} Requeue={a['Requeue']} """ \
         f"""Restarts={a['Restarts']} BatchFlag={a['BatchFlag']} Reboot={a['Reboot']} """ \
-        f"""ExitCode={a['ExitCode']} RunTime={a['RunTime']} TimeLimit={a['TimeLimit']} """ \
-        f"""TimeMin={a['TimeMin']} SubmitTime={a['SubmitTime']} EligibleTime={a['EligibleTime']} """ \
-        f"""AccrueTime={a['AccrueTime']} StartTime={a['StartTime']} EndTime={a['EndTime']} """ \
-        f"""Deadline={a['Deadline']} PreemptEligibleTime={a['PreemptEligibleTime']} """ \
-        f"""PreemptTime={a['PreemptTime']} SuspendTime={a['SuspendTime']} """ \
-        f"""SecsPreSuspend={a['SecsPreSuspend']} LastSchedEval={a['LastSchedEval']} """ \
-        f"""Scheduler={a['Scheduler']} Partition={a['Partition']} AllocNode:Sid={a['AllocNode:Sid']} """ \
+        f"""ExitCode={a['ExitCode']} RunTime={a['RunTime']} TimeLimit={a['TimeLimit']} TimeMin={a['TimeMin']} """ \
+        f"""SubmitTime={time.strftime(t,a['SubmitTime'])} EligibleTime={time.strftime(t,a['EligibleTime'])} """ \
+        f"""AccrueTime={time.strftime(t,a['AccrueTime'])} StartTime={time.strftime(t,a['StartTime'])} """ \
+        f"""EndTime={time.strftime(t,a['EndTime'])} Deadline={a['Deadline']} """ \
+        f"""PreemptEligibleTime={time.strftime(t,a['PreemptEligibleTime'])} PreemptTime={a['PreemptTime']} """ \
+        f"""SuspendTime={a['SuspendTime']} SecsPreSuspend={a['SecsPreSuspend']} """ \
+        f"""LastSchedEval={time.strftime(t,a['LastSchedEval'])} Scheduler={a['Scheduler']} """ \
+        f"""Partition={a['Partition']} AllocNode:Sid={a['AllocNode:Sid']} """ \
         f"""ReqNodeList={a['ReqNodeList']} ExcNodeList={a['ExcNodeList']} NodeList={a['NodeList']} """ \
         f"""BatchHost={a['BatchHost']} NumNodes={a['NumNodes']} NumCPUs={a['NumCPUs']} """ \
         f"""NumTasks={a['NumTasks']} CPUs/Task={a['CPUs/Task']} ReqB:S:C:T={a['ReqB:S:C:T']} """ \
@@ -131,6 +134,11 @@ class SlurmJob(object):
                         attrs[k] = None
                     elif attrs[k] in ('NO'):
                         attrs[k] = False
+                    elif ":" in attrs[k]:
+                        try:
+                            attrs[k] = time.strptime(attrs[k], "%Y-%m-%dT%H:%M:%S")
+                        except ValueError: #if not a timestring
+                            pass
 
         return attrs
 
